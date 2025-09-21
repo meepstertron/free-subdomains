@@ -1,0 +1,55 @@
+name: Build and Deploy
+permissions: write-all
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+
+    - name: Build and push Main Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./
+        file: ./Dockerfile
+        push: true
+        tags: ghcr.io/meepstertron/freesubdomains-main:${{ github.sha }}
+
+    - name: Set up Kubeconfig
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo -n "${{ secrets.KUBECONFIG }}" | base64 --decode > ~/.kube/config
+        chmod 600 ~/.kube/config
+        kubectl config use-context github-deployer-context
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f ./k8s/k8s-deployment-main.yaml
+
+
+
+
+    - name: Roll out deployments
+      run: |
+        kubectl rollout restart deployment/freesubdomains-main

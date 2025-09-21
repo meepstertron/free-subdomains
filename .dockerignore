@@ -1,0 +1,13 @@
+.github/
+.gitignore
+.env
+.venv
+__pycache__/
+*.pyc
+instance/
+.vscode/
+README.md
+LICENSE
+k8s/
+env/
+.venv/
