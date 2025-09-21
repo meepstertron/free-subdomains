@@ -15,3 +15,7 @@ spec:
       containers:
       - name: freesubdomains-main
         image: ghcr.io/meepstertron/freesubdomains-main:latest
+        envFrom:
+        - secretRef:
+            name: freesubdomains-env
+
