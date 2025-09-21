@@ -29,7 +29,9 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/meepstertron/freesubdomains-main:${{ github.sha }}
+        tags: |
+          ghcr.io/meepstertron/freesubdomains-main:latest
+          ghcr.io/meepstertron/freesubdomains-main:${{ github.sha }}
 
     - name: Set up Kubeconfig
       uses: azure/setup-kubectl@v3
