@@ -2,3 +2,4 @@ slack_sdk
 slack-bolt
 python-dotenv
 cloudflare
+requests
